@@ -1,6 +1,6 @@
-import { parse } from "dotenv";
+const { parse } = require('dotenv');
 
-export function validateAuthor(req, res, next) {
+function validateAuthor(req, res, next) {
     const {name, email} = req.body;
     if (!name || typeof name !== 'string' || name.trim() === '') {
         return res.status(400).json({error: 'El nombre del autor es necesario, debe ser texto y no debe ser vacío.'})
@@ -13,7 +13,7 @@ export function validateAuthor(req, res, next) {
     next ();
 }
 
-export function validatePost (req, res, next) {
+function validatePost (req, res, next) {
     const {title, content, author_id} = req.body;
     if (!title || typeof title !== 'string' || title.trim() === '') {
         return res.status(400).json({error: 'El título del post es necesario, debe ser texto y no debe ser vacío.'})
@@ -23,9 +23,14 @@ export function validatePost (req, res, next) {
         return res.status(400).json({error: 'El contenido del post es necesario, debe ser texto y no debe ser vacío.'})
     }
 
-    const parsedAuthorId = parseInt(author_id,10);
-    if (!parsedAuthorId || typeof parsedAuthorId !== 'number') {
+    const parsedAuthorId = parseInt(author_id, 10);
+    if (isNaN(parsedAuthorId)) {
         return res.status(400).json({ error: 'author_id es obligatorio y debe ser un número.' });
     }
     next();
 }
+
+module.exports = {
+    validateAuthor,
+    validatePost
+};
