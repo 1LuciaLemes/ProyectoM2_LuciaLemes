@@ -54,16 +54,17 @@ async function updatePost (id, {title, content}) {
         'UPDATE posts SET title = $1, content = $2 WHERE id = $3 RETURNING *',
         [newTitle, newContent, id]
     )
+    return result.rows[0];
 }
 
 // DELETE /posts/:id - eliminar post
 async function deletePost (id) {
-    //verifico que el post exista
-    const exitingPostRes = await pool.query('SELECT * FROM posts WHERE id = $1', [id]);
+    const existingPostRes = await pool.query('SELECT * FROM posts WHERE id = $1', [id]);
     if (existingPostRes.rows.length === 0) {
         throw new Error('El post no existe');
     }
-    const result = await pool.query('DELETE FROM posts WHERE id = $1', [id]);
+    const result = await pool.query('DELETE FROM posts WHERE id = $1 RETURNING *', [id]);
+    return result.rows[0];
 }
 
 module.exports = {

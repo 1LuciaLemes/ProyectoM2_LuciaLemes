@@ -49,7 +49,7 @@ async function updateAuthor (id, {name, email, bio}) {
             [email, id]
         );
         if (emailCheck.rows.length > 0) {
-            throw new Error('El email ya está registrado por otro autor');
+            throw new Error('El email ya está registrado');
         }
     }
 

@@ -32,7 +32,7 @@ router.post('/', validateAuthor, async (req, res, next) => {
         const newAuthor = await authorsService.createAuthor(req.body);
         res.status(201).json(newAuthor);
     } catch (error) {
-        next(error);
+        res.status(400).json({ error: error.message });
     }
 })
 
@@ -45,7 +45,7 @@ router.put('/:id', validateAuthor, async (req, res, next) => {
         }
         res.json(updateAuthor);
     } catch (error) {
-        next(error);
+        res.status(400).json({ error: error.message });
     }
 })
 
