@@ -15,8 +15,12 @@ async function getPostById (id) {
 // GET /posts/author/:authorId - posts con detalle de su author
 async function getPostsByAuthorId (authorId) {
     const result = await pool.query(
-    'SELECT p.*, a.name AS author_name, a.email AS author_email FROM posts p JOIN authors a ON p.author_id = a.id WHERE p.author_id = $1',
-    [authorId]
+        `SELECT p.*, a.name AS author_name, a.email AS author_email 
+        FROM posts p 
+        JOIN authors a ON p.author_id = a.id 
+        WHERE p.author_id = $1 
+        ORDER BY p.created_at ASC`,
+        [authorId]
 );
     return result.rows;
 } 
@@ -48,7 +52,6 @@ async function updatePost (id, {title, content}) {
     //uso los valores nuevos o los que ya tenia
     const newTitle = title || existingPost.title;
     const newContent = content || existingPost.content;
-    const newAuthorId = existingPost.author_id;
 
     const result = await pool.query (
         'UPDATE posts SET title = $1, content = $2 WHERE id = $3 RETURNING *',

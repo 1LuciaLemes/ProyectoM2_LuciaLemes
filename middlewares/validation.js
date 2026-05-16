@@ -35,7 +35,33 @@ function validatePost (req, res, next) {
     next();
 }
 
+function validateComment (req, res, next) {
+    const { post_id, author_id, content } = req.body;
+
+    // Para POST, post_id y author_id son obligatorios
+    if (req.method === 'POST') {
+        const parsedPostId = parseInt(post_id, 10);
+        const parsedAuthorId = parseInt(author_id, 10);
+
+        if (isNaN(parsedPostId)) {
+            return res.status(400).json({ error: 'post_id es obligatorio y debe ser un número.' });
+        }
+
+        if (isNaN(parsedAuthorId)) {
+            return res.status(400).json({ error: 'author_id es obligatorio y debe ser un número.' });
+        }
+    }
+
+    // Para POST y PUT, content siempre debe existir y no estar vacío
+    if (!content || typeof content !== 'string' || content.trim() === '') {
+        return res.status(400).json({ error: 'El contenido del comentario es obligatorio y no puede estar vacío.' });
+    }
+
+    next();
+}
+
 module.exports = {
     validateAuthor,
-    validatePost
+    validatePost,
+    validateComment
 };

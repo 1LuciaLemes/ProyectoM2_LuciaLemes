@@ -16,6 +16,13 @@ CREATE TABLE posts (
  FOREIGN KEY (author_id) REFERENCES authors(id) ON DELETE CASCADE
 );
 
+CREATE TABLE comments (
+    id SERIAL PRIMARY KEY,
+    post_id INT NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+    author_id INT NOT NULL REFERENCES authors(id) ON DELETE SET NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 --Datos de ejemplos:
 INSERT INTO authors (name, email, bio) VALUES
@@ -29,3 +36,12 @@ INSERT INTO posts (title, content, author_id, published) VALUES
  ('APIs RESTful', 'REST es un estilo arquitectónico...', 1, true),
  ('Manejo de errores en Express', 'El manejo apropiado de errores...', 3, false),
  ('Async/Await explicado', 'Las promesas simplifican el código asíncrono...', 1, false);
+
+INSERT INTO comments (post_id, author_id, content) VALUES
+    (1, 1, '¡Me encantó este post! Muy útil.'),
+    (1, 1, '¡Me encantó este post!'),
+    (1, 2, 'Gracias por compartir, aprendí mucho.'),
+    (1, 2, 'Gracias por compartir.'),
+    (2, 1, 'Interesante perspectiva, quiero probar esto.'),
+    (2, 3, 'Buen trabajo, felicidades al autor.'),
+    (2, 3, 'Buen trabajo.');

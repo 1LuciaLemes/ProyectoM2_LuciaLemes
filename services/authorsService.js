@@ -1,4 +1,4 @@
-const pool  = require('../db/config.js');
+const pool = require('../db/config.js');
 
 // GET /authors - listar usuarios
 async function getAllAuthors () {
