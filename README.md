@@ -62,40 +62,127 @@ La API permite:
 ├─ package.json
 └─ package-lock.json
 ```
-## Endpoints / API
+## Responsabilidad de cada archivo / carpeta
+### Archivos principales
 
-### Authors
+#### server.js
 
-| Método | Ruta           | Descripción                 |
-|--------|----------------|----------------------------|
-| GET    | /authors       | Listar todos los autores   |
-| GET    | /authors/:id   | Obtener detalle de un autor|
-| POST   | /authors       | Crear un nuevo autor       |
-| PUT    | /authors/:id   | Actualizar un autor        |
-| DELETE | /authors/:id   | Eliminar un autor          |
+Carga variables de entorno en desarrollo (dotenv) y levanta el servidor con app.listen().
+No contiene rutas ni lógica de negocio.
 
-### Posts
+#### app.js
 
-| Método | Ruta               | Descripción                     |
-|--------|------------------|---------------------------------|
-| GET    | /posts            | Listar todos los posts          |
-| GET    | /posts/:id        | Obtener detalle de un post      |
-| GET    | /posts/author/:id | Listar posts de un autor        |
-| POST   | /posts            | Crear un nuevo post             |
-| PUT    | /posts/:id        | Actualizar un post existente    |
-| DELETE | /posts/:id        | Eliminar un post                |
+Crea la instancia de Express (createApp()), activa express.json().
+Monta las rutas (/authors, /posts, /comments) y registra middlewares de error.
+Exporta la app para poder testear con un pool de base de datos falso.
 
-### Comments
+### Rutas (/routes)
 
-| Método | Ruta                 | Descripción                     |
-|--------|--------------------|---------------------------------|
-| GET    | /comments           | Listar todos los comentarios    |
-| GET    | /comments/:id       | Obtener detalle de un comentario|
-| GET    | /comments/post/:id  | Listar comentarios de un post   |
-| GET    | /comments/author/:id| Listar comentarios de un autor  |
-| POST   | /comments           | Crear un nuevo comentario       |
-| PUT    | /comments/:id       | Actualizar un comentario        |
-| DELETE | /comments/:id       | Eliminar un comentario          |
+#### authors.js
+
+Define el CRUD de autores: GET, POST, PUT, DELETE<br>
+Recibe requests y delega la lógica al service correspondiente.
+
+| Endpoint                   | Método | Responsabilidad |
+|-----------------------------|--------|----------------|
+| /authors                    | GET    | Listar todos los autores. |
+| /authors/:id                | GET    | Obtener detalle de un autor. |
+| /authors                    | POST   | Crear un nuevo autor. Recibe request, valida parámetros mínimos delega la lógica a `authorsService.js`. |
+| /authors/:id                | PUT    | Actualizar un autor existente. Valida parámetros y llama al service. |
+| /authors/:id                | DELETE | Eliminar un autor. Valida ID y delega al service. |
+
+#### posts.js
+
+Define el CRUD de posts y consultas por autor.<br>
+Maneja requests y delega la lógica a postsService.js.
+
+| Endpoint                   | Método | Responsabilidad |
+|-----------------------------|--------|----------------|
+| /posts                      | GET    | Listar todos los posts. |
+| /posts/:id                  | GET    | Obtener detalle de un post específico. |
+| /posts/author/:id           | GET    | Listar posts de un autor determinado. |
+| /posts                      | POST   | Crear un nuevo post. Gestiona requests y delega la lógica a `postsService.js`. |
+| /posts/:id                  | PUT    | Actualizar un post existente. Valida parámetros y llama al service. |
+| /posts/:id                  | DELETE | Eliminar un post. Valida ID y delega al service. |
+
+#### comments.js
+
+Define el CRUD de comentarios y filtros por post o autor.<br>
+Delegar la lógica a commentsService.js.
+
+| Endpoint                     | Método | Responsabilidad |
+|-------------------------------|--------|----------------|
+| /comments                     | GET    | Listar todos los comentarios. |
+| /comments/:id                 | GET    | Obtener detalle de un comentario. |
+| /comments/post/:id            | GET    | Listar comentarios de un post específico. |
+| /comments/author/:id          | GET    | Listar comentarios de un autor específico. |
+| /comments                     | POST   | Crear un nuevo comentario. Maneja requests y delega a `commentsService.js`. |
+| /comments/:id                 | PUT    | Actualizar un comentario. Valida parámetros y delega al service. |
+| /comments/:id                 | DELETE | Eliminar un comentario. Valida ID y delega al service. |
+
+#### authorsService.js
+
+Contiene la lógica de negocio para CRUD de autores: consultas a la base de datos, validaciones complejas y transformaciones de datos.
+
+#### postsService.js
+
+Contiene la lógica de negocio para CRUD de posts y consultas específicas por autor.
+
+#### commentsService.js
+
+Contiene la lógica de negocio para CRUD de comentarios, incluyendo filtros por post o autor.
+
+### Base de datos (/db)
+
+#### config.js
+
+Configura la conexión con PostgreSQL usando pg.Pool.<br>
+Exporta el pool de conexión para que los services puedan interactuar con la DB.
+
+#### miniblog_db.sql
+
+Script de creación de la base de datos, tablas (authors, posts, comments) y datos de ejemplo.
+
+### Middlewares (/middlewares)
+
+#### errorHandler.js
+
+Captura errores generados en las rutas o services y envía respuestas HTTP con el código y mensaje correspondiente.
+
+#### validation.js
+
+Contiene funciones de validación para requests: verifica campos obligatorios, formatos correctos, etc.
+
+### Tests (/tests)
+
+authors.test.js, posts.test.js, comments.test.js
+
+Pruebas automáticas de los endpoints usando Vitest + Supertest.
+Verifica que las rutas respondan correctamente y que la lógica de negocio funcione como se espera.
+
+### Documentación (/docs)
+
+#### openapi.yaml
+
+Archivo con la documentación completa de la API en formato OpenAPI/Swagger.
+### Otros archivos
+
+#### .env.example
+
+Ejemplo de variables de entorno necesarias para correr la API.
+
+#### vitest.config.js
+
+Configuración de Vitest para ejecutar los tests.
+
+#### package.json / package-lock.json
+
+Dependencias y scripts de la aplicación.
+
+#### README.md
+
+Documentación del proyecto y guía de instalación, pruebas y deployment.
+
 
 ## Setup / Instalación
 
