@@ -9,7 +9,7 @@ info:
 servers:
   - url: http://localhost:3000
     description: Servidor local
-    - url: https://proyectom2lucialemes-production.up.railway.app
+  - url: https://proyectom2lucialemes-production.up.railway.app
     description: Servidor en Railway
 
 # -------------------------
