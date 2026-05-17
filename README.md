@@ -1,7 +1,7 @@
 # Proyecto Integrador M2 - Backend
 
 ## Descripción
-
+### Qué hace la API:
 Este proyecto es una **API REST** desarrollada en **Node.js + Express**, conectada a **PostgreSQL**, que permite gestionar **authors**, **posts** y **comments**.
 
 El objetivo es practicar la creación de **endpoints CRUD**, validaciones, manejo de errores, tests automatizados y documentación **OpenAPI**.
@@ -18,53 +18,52 @@ La API permite:
 
 - **Node.js** >= 18  
 - **PostgreSQL** >= 14  
-- **npm** o **yarn**  
+- **npm**
 - [Opcional] **Railway CLI** para deployment  
 
 ---
 
-## Setup Local
-
-### 1. Clonar el repositorio
-
-```bash
-git clone <URL_DEL_REPOSITORIO>
-cd <NOMBRE_REPO>
+## Estructura del proyecto
+``` 
+/ProyectoM2_LuciaLemes
+│
+├─ /routes
+│ ├─ authors.js
+│ ├─ posts.js
+│ └─ comments.js
+│
+├─ /services
+│ ├─ authorsService.js
+│ ├─ postsService.js
+│ └─ commentsService.js
+│
+├─ /db
+│ ├─ config.js
+│ └─ miniblog_db.sql
+│
+├─ /middlewares
+│ ├─ errorHandler.js
+│ └─ validation.js
+│
+├─ /tests
+│ ├─ authors.test.js
+│ ├─ posts.test.js
+│ └─ comments.test.js
+│
+├─ /docs
+│ └─ openapi.yaml
+│
+├─ app.js
+├─ server.js
+├─ README.md
+├─ .gitignore
+├─ .env.example
+├─ vitest.config.js
+├─ package.json
+└─ package-lock.json
 ```
+## Endpoints / API
 
-### 2. Instalar dependencias
-```bash
-npm install
-```
-
-### 3. Configurar base de datos
-Crear base de datos en PostgreSQL.<br>
-Ejecutar el script de setup (db/miniblog_db.sql):<br>
-```bash
-psql -U <usuario> -d <nombre_db> -f db/miniblog_db.sql
-```
-Verificar que las tablas authors, posts y comments se crearon correctamente.<br>
-
-### 4. Configurar variables de entorno
-
-Crear un archivo .env siguiendo el ejemplo .env.example:<br>
-```bash
-DB_HOST=localhost
-DB_USER=postgres
-DB_PASSWORD=mi_contraseña
-DB_NAME=miniblog
-DB_PORT=5432
-PORT=3000
-```
-Ejecutar la aplicación
-```bash
-npm start
-```
-La API estará disponible en http://localhost:3000.
-
-## Endpoints
-
-La API cuenta con los siguientes endpoints:
 ### Authors
 
 | Método | Ruta           | Descripción                 |
@@ -98,29 +97,83 @@ La API cuenta con los siguientes endpoints:
 | PUT    | /comments/:id       | Actualizar un comentario        |
 | DELETE | /comments/:id       | Eliminar un comentario          |
 
-### Tests
-Se utilizan Vitest y Supertest para pruebas de endpoints.<br>
-Ejecutar tests:
+## Setup / Instalación
+
+- ### Clonar el repositorio
+
+```bash
+git clone <URL_DEL_REPOSITORIO>
+cd <NOMBRE_REPO>
+```
+
+- ### Configurar variables de entorno
+
+Crear un archivo `.env` siguiendo el ejemplo `.env.example`.
+
+## Probar la API localmente con datos de ejemplo
+### 1. Instalar dependencias
+```bash
+npm install
+```
+Esto descargará todas las librerías necesarias en la carpeta node_modules.
+
+### 2. Configurar base de datos
+
+- #### Crear base de datos en PostgreSQL.
+
+```
+psql -U postgres
+```
+Te pedirá tu contraseña. Luego, dentro de PostgreSQL, crea la base de datos:
+
+```
+CREATE DATABASE miniblog;
+\q
+```
+- #### Crea tablas y datos de ejemplo:
+Ejecuta el script SQL que ya tienes en tu proyecto (db/miniblog_db.sql):
+```bash
+psql -U postgres -d miniblog -f db/miniblog_db.sql
+```
+Esto creará las tablas (authors, posts, comments) y cargará los datos de ejemplo.
+
+- #### Iniciar el servidor Node.js
+``` 
+node server.js 
+```
+
+Si todo está bien, verás un mensaje indicando que la API está corriendo, por ejemplo en:
+```
+http://localhost:3000
+```
+
+### 3. Probar endpoints con Thunder Client / Postman
+- URL base: `http://localhost:3000`
+- Ejemplos:
+  - GET `/authors` → lista todos los autores
+  - GET `/posts/author/1` → posts del autor Ana García
+  - POST `/comments` → crear un nuevo comentario usando un `author_id` y `post_id` existentes:
+    ```json
+    {
+      "post_id": 1,
+      "author_id": 3,
+      "content": "¡Excelente post, gracias por compartir!"
+    }
+    ```
+
+### 4. Ejecutar tests automáticos
+En la terminal coloca el siguiente código para ejecutar los test:
 ```bash
 npm test
 ```
-Se recomienda correrlos después de crear la base de datos y poblarla con datos de ejemplo.
 
-## Documentación OpenAPI
+## Deployment y Documentación
 
-La documentación completa está disponible en openapi.yaml.<br>
-Se puede visualizar con Swagger UI siguiendo estos pasos:<br>
-
-- Instalar Swagger UI localmente o usar Swagger Editor Online.
-- Cargar el archivo openapi.yaml.
-- Probar los endpoints directamente desde la interfaz.
-- Deployment en Railway
-- Crear un proyecto en Railway.
-- Conectar tu repositorio de GitHub.
-- Configurar variables de entorno en Railway (igual que tu .env local).
-- Ejecutar el deploy.
+Para desplegar la API en Railway y acceder a la documentación interactiva:
+1. Crear un proyecto en Railway.
+2. Conectar tu repositorio de GitHub.
+3. Configurar variables de entorno (iguales a las de tu archivo .env local)
 
 
-El proyecto proporcionará:<br>
-- Internal URL: usada por servicios internos.<br>
-- Public URL: URL pública para consumir la API.
+**Public URL / Documentación interactiva:** [Acceder a la API](https://proyectom2lucialemes-production.up.railway.app/docs/#/)<br>
+Desde la URL pública, podrás probar los endpoints directamente en Swagger UI y explorar toda la documentación OpenAPI.
