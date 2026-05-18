@@ -19,7 +19,7 @@ CREATE TABLE posts (
 CREATE TABLE comments (
     id SERIAL PRIMARY KEY,
     post_id INT NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
-    author_id INT NOT NULL REFERENCES authors(id) ON DELETE SET NULL,
+    author_id INT REFERENCES authors(id) ON DELETE SET NULL,
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
