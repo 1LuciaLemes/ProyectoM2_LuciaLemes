@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 
 // GET /authors - listar usuarios
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     try {
         const authors = await authorsService.getAllAuthors();
         res.json(authors);
@@ -32,7 +32,7 @@ router.post('/', validateAuthor, async (req, res, next) => {
         const newAuthor = await authorsService.createAuthor(req.body);
         res.status(201).json(newAuthor);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        next(error);
     }
 })
 
@@ -45,7 +45,7 @@ router.put('/:id', validateAuthor, async (req, res, next) => {
         }
         res.json(updateAuthor);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        next(error);
     }
 })
 

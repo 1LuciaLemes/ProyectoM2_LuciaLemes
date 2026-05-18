@@ -56,7 +56,7 @@ router.post('/', validateComment, async (req, res, next) => {
         );
         res.status(201).json(newComment);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        next(error);
     }
 });
 
@@ -69,7 +69,7 @@ router.put('/:id', validateComment, async (req, res, next) => {
         }
         res.json(updatedComment);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        next(error);
     }
 });
 
