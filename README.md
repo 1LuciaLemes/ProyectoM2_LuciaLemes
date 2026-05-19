@@ -1,5 +1,17 @@
 # Proyecto Integrador M2 - Backend
 
+## Índice
+- [Descripción](#descripción)
+- [Requisitos](#requisitos)
+- [Estructura del proyecto](#estructura-del-proyecto)
+- [Responsabilidad de cada archivo / carpeta](#responsabilidad-de-cada-archivo--carpeta)
+- [Validaciones del API](#validaciones-del-api)
+- [Tests del API](#tests-del-api)
+- [Setup / Instalación](#setup--instalación)
+- [Deployment y Documentación](#deployment-y-documentación)
+- [Uso de IA](#uso-de-ia)
+
+
 ## Descripción
 ### Qué hace la API:
 Este proyecto es una **API REST** desarrollada en **Node.js + Express**, conectada a **PostgreSQL**, que permite gestionar **authors**, **posts** y **comments**.
@@ -13,13 +25,15 @@ La API permite:
 - **Gestionar comentarios:** crear, listar, actualizar y eliminar, incluyendo comentarios por post y por autor.
 
 ---
-
+[⬆ Volver al índice](#índice)
 ## Requisitos
 
 - **Node.js** >= 18  
 - **PostgreSQL** >= 14  
 - **npm**
 - [Opcional] **Railway CLI** para deployment  
+
+[⬆ Volver al índice](#índice)
 
 ---
 
@@ -51,7 +65,8 @@ La API permite:
 │ └─ comments.test.js
 │
 ├─ /docs
-│ └─ openapi.yaml
+│ ├─ openapi.yaml
+│ └─ USE_IA.md
 │
 ├─ app.js
 ├─ server.js
@@ -62,6 +77,9 @@ La API permite:
 ├─ package.json
 └─ package-lock.json
 ```
+
+
+[⬆ Volver al índice](#índice)
 ## Responsabilidad de cada archivo / carpeta
 ### Archivos principales
 
@@ -151,20 +169,66 @@ Captura errores generados en las rutas o services y envía respuestas HTTP con e
 
 #### validation.js
 
-Contiene funciones de validación para requests: verifica campos obligatorios, formatos correctos, etc.
+A continuación se describen las validaciones aplicadas a los distintos endpoints:
 
-### Tests (/tests)
+| Función             | Campos Verificados                          | Reglas                                                                                         | Método Aplicable |
+|--------------------|--------------------------------------------|------------------------------------------------------------------------------------------------|----------------|
+| `validateAuthor`    | `name`, `email`                             | - `name`: obligatorio, debe ser texto, no vacío<br>- `email`: obligatorio, debe ser texto con formato válido | POST/PUT       |
+| `validatePost`      | `title`, `content`, `author_id`             | - `title`: obligatorio, debe ser texto, no vacío<br>- `content`: obligatorio, debe ser texto, no vacío<br>- `author_id`: obligatorio en POST, debe ser número | POST/PUT       |
+| `validateComment`   | `post_id`, `author_id`, `content`           | - `post_id`: obligatorio en POST, debe ser número<br>- `author_id`: obligatorio en POST, debe ser número<br>- `content`: obligatorio, debe ser texto, no vacío | POST/PUT       |
 
-authors.test.js, posts.test.js, comments.test.js
+#### Explicación de la tabla:
+- Función → Nombre de la función de validación que exportas.
+- Campos Verificados → Qué propiedades del req.body se revisan.
+- Reglas → Requisitos específicos que debe cumplir cada campo.
+- Método Aplicable → Si la validación aplica a POST, PUT, o ambos.
 
-Pruebas automáticas de los endpoints usando Vitest + Supertest.
-Verifica que las rutas respondan correctamente y que la lógica de negocio funcione como se espera.
+
+### Tests del API
+
+#### Authors API
+
+Esta sección resume los tests implementados para la gestión de autores en la API.
+
+| Endpoint / Función       | Qué prueba / Descripción                                                                 |
+|--------------------------|-----------------------------------------------------------------------------------------|
+| `POST /authors`          | - Crea un autor con datos válidos (`name`, `email`, `bio`) y devuelve un `id`. <br> - No permite crear un autor con un email que ya existe. |
+| `GET /authors`           | Lista todos los autores registrados.                                                    |
+| `GET /authors/:id`       | - Obtiene un autor específico por su `id`. <br> - Devuelve 404 si el autor no existe. |
+| `PUT /authors/:id`       | - Actualiza los datos de un autor existente y refleja los cambios correctamente. <br> - No permite actualizar usando un email que ya pertenece a otro autor. |
+| `DELETE /authors/:id`    | - Elimina un autor existente y confirma que ya no se puede acceder a él. <br> - Devuelve 404 si se intenta eliminar un autor que no existe. |
+
+#### Posts API
+
+| Endpoint / Función             | Qué prueba / Descripción                                                                 |
+|--------------------------------|-----------------------------------------------------------------------------------------|
+| `POST /posts`                  | Crear post válido con `title`, `content` y `author_id`.                                  |
+| `GET /posts`                   | Lista todos los posts.                                                                   |
+| `GET /posts/:id`               | - Obtener un post específico por `id`. <br> - Devuelve 404 si el post no existe.        |
+| `GET /posts/author/:authorId` | Devuelve todos los posts de un autor específico.                                         |
+| `PUT /posts/:id`               | Actualiza el `title` y `content` de un post existente.                                   |
+| `DELETE /posts/:id`            | Elimina un post y confirma que ya no existe.                                             |
+
+#### Comments API
+
+| Endpoint / Función             | Qué prueba / Descripción                                                                 |
+|--------------------------------|-----------------------------------------------------------------------------------------|
+| `POST /comments`               | - Crear comentario válido con `content`, `post_id` y `author_id`. <br> - No permite crear comentario sin `content`. |
+| `GET /comments`                | Lista todos los comentarios.                                                            |
+| `GET /comments/:id`            | - Obtener un comentario específico por `id`. <br> - Devuelve 404 si el comentario no existe. |
+| `PUT /comments/:id`            | Actualiza el `content` de un comentario existente.                                       |
+| `DELETE /comments/:id`         | Elimina un comentario y confirma que ya no existe.                                       |
 
 ### Documentación (/docs)
+
+#### USE_IA.md
+
+Archivo con la documentación completa de cómo se utilizó la IA para el avance y construcción de este proyecto.
 
 #### openapi.yaml
 
 Archivo con la documentación completa de la API en formato OpenAPI/Swagger.
+
 ### Otros archivos
 
 #### .env.example
@@ -183,6 +247,8 @@ Dependencias y scripts de la aplicación.
 
 Documentación del proyecto y guía de instalación, pruebas y deployment.
 
+
+[⬆ Volver al índice](#índice)
 
 ## Setup / Instalación
 
@@ -249,18 +315,69 @@ http://localhost:3000
     ```
 
 ### 4. Ejecutar tests automáticos
-En la terminal coloca el siguiente código para ejecutar los test:
+1. Instalar Vitest (si aún no está instalado):
+```bash
+npm install --save-dev vitest
+```
+2. Ejecutar los test:
 ```bash
 npm test
 ```
 
+
+[⬆ Volver al índice](#índice)
 ## Deployment y Documentación
 
-Para desplegar la API en Railway y acceder a la documentación interactiva:
-1. Crear un proyecto en Railway.
-2. Conectar tu repositorio de GitHub.
-3. Configurar variables de entorno (iguales a las de tu archivo .env local)
+### Documentación interactiva con Swagger
 
+Esta API incluye documentación generada con **OpenAPI/Swagger**, que permite:
+- Explorar los endpoints disponibles
+- Ver los parámetros de entrada y salida
+- Probar requests directamente desde el navegador
 
-**Public URL / Documentación interactiva:** [Acceder a la API](https://proyectom2lucialemes-production.up.railway.app/docs/#/)<br>
-Desde la URL pública, podrás probar los endpoints directamente en Swagger UI y explorar toda la documentación OpenAPI.
+### Probar Swagger localmente
+1. Instala las dependencias:
+```bash
+npm install
+```
+
+### Desplegar la API en Railway
+
+1. Crear un proyecto en [Railway](https://railway.app/).  
+2. Conectar tu repositorio de GitHub.  
+3. Configurar variables de entorno en Railway:
+
+```env
+PORT=3000
+DATABASE_URL_PUBLIC=<URL_DE_TU_BASE_DE_DATOS_POSTGRESQL>
+```
+
+*Nota: DATABASE_URL_PUBLIC es la URL pública de tu base de datos PostgreSQL en Railway. Se usa para que la API pueda conectarse desde cualquier lugar.*
+
+4. Conectar la base de datos y agregar datos iniciales:
+
+En tu terminal (Git Bash, por ejemplo), ejecuta:
+```
+psql <DATABASE_URL_PUBLIC>
+```
+
+Luego, dentro de PostgreSQL, ejecuta el script de creación de tablas y datos de ejemplo:
+```
+\i db/miniblog_db.sql
+```
+
+Esto creará las tablas authors, posts y comments, y cargará los datos iniciales para probar la API.
+
+5. Railway detectará automáticamente que tu proyecto es Node.js y levantará la app.
+6. Verifica los logs en Railway para confirmar que la API se está ejecutando correctamente.
+
+### URL pública
+
+**Public URL / Swagger:** [Acceder a la API](https://proyectom2lucialemes-production.up.railway.app/docs/#/)<br>
+Desde esta URL podrás usar Swagger para explorar los endpoints y probar requests directamente.
+
+## Uso de IA
+
+Para ver cómo se utilizó la inteligencia artificial durante el desarrollo, revisa [Uso de IA para el proyecto](docs/USE_IA.md#inicio)
+
+[⬆ Volver al índice](#índice)
